@@ -32,7 +32,7 @@
     "jasmine-ts": "^0.4.0",
     "mock-express-response": "^0.3.0",
     "nodemon": "^2.0.12",
-    "prettier": "^2.3.2",
+    "prettier": "^2.4.1",
     "superagent": "^6.1.0",
     "ts-node": "^10.2.0",
     "typescript": "^4.3.5"
