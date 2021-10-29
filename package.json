@@ -28,7 +28,7 @@
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-prettier": "^3.4.1",
     "jasmine-ts": "^0.4.0",
     "mock-express-response": "^0.3.0",
     "nodemon": "^2.0.14",
