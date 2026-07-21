@@ -3,7 +3,7 @@ import request from 'superagent';
 import app from '../index';
 import { minimumWidth, minimumHeight } from '../utilities/image';
 
-const baseURL = 'http://localhost:5000';
+const baseURL = `http://localhost:${process.env.PORT || 5000}`;
 
 app;
 
