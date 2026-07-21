@@ -90,16 +90,22 @@ images.post('/', async (req: Request, res: Response): Promise<void> => {
 
     const tempPath = tempFile.path;
 
-    const destinationPath = await `${path.resolve()}/images/full/${
-      tempFile.originalname
-    }`;
+    // Strip path components from the client-supplied filename so an upload
+    // named e.g. ../../evil can't escape the images directory.
+    const safeName = path.basename(tempFile.originalname);
+    const destinationPath = `${path.resolve()}/images/full/${safeName}`;
 
-    await fs.rename(tempPath, destinationPath, (err) => {
-      if (err) throw err;
+    try {
+      await fs.promises.rename(tempPath, destinationPath);
       return res.status(201).json({
         message: 'Created'
       });
-    });
+    } catch (renameErr) {
+      console.error(renameErr);
+      return res.status(500).json({
+        message: 'Could not save the image'
+      });
+    }
   });
 });
 
