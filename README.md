@@ -48,7 +48,7 @@ npm run lint
 * **404: Resource not found**
   - Everything but GET/POST api/images
   
-* 4**15: Unsupported Media Type**
+* **415: Unsupported Media Type**
   - POST
     - If the image type is other than jpeg
 
