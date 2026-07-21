@@ -12,7 +12,9 @@ images.get(
   async (req: Request, res: Response): Promise<unknown | void> => {
     const width = req.query.width as string;
     const height = req.query.height as string;
-    const filename = req.query.filename as unknown as string;
+    // Strip any path components so a crafted ?filename=../../ can't escape the
+    // images directory (path traversal).
+    const filename = path.basename((req.query.filename as string) || '');
 
     const parsedWidth: number = parseInt(width);
     const parsedHeight: number = parseInt(height);
@@ -40,7 +42,7 @@ images.get(
 
     const s = fs.createReadStream(imagePath);
     s.on('open', function () {
-      res.set('Content-Type', 'jpg');
+      res.set('Content-Type', 'image/jpeg');
       s.pipe(res);
     });
     s.on('error', function () {
