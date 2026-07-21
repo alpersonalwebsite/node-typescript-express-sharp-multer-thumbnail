@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express';
+import helmet from 'helmet';
 import routes from './routes/index';
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
+app.use(helmet());
 app.use('/api', routes);
 
 app.all('*', (req: Request, res: Response): void => {
