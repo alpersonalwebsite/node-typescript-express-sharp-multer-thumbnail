@@ -12,9 +12,15 @@ images.get(
   async (req: Request, res: Response): Promise<unknown | void> => {
     const width = req.query.width as string;
     const height = req.query.height as string;
-    // Strip any path components so a crafted ?filename=../../ can't escape the
-    // images directory (path traversal).
-    const filename = path.basename((req.query.filename as string) || '');
+    // A repeated ?filename=a&filename=b arrives as an array (and a bracketed
+    // key as an object); collapse to a single string so path.basename can't
+    // throw on a non-string. Then strip path components so a crafted
+    // ?filename=../../ can't escape the images directory (path traversal).
+    const rawFilename = Array.isArray(req.query.filename)
+      ? req.query.filename[0]
+      : req.query.filename;
+    const filename =
+      typeof rawFilename === 'string' ? path.basename(rawFilename) : '';
 
     const parsedWidth: number = parseInt(width);
     const parsedHeight: number = parseInt(height);
