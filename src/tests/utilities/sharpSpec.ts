@@ -80,14 +80,14 @@ describe('Testing Image library utilities', () => {
       try {
         await validateWidthAndHeight(imageName, invalidWidth, validHeight);
       } catch (err) {
-        expect(err.message).toBe('Invalid width');
+        expect((err as Error).message).toBe('Invalid width');
       }
     });
     it('returns ERROR: Invalid height if HEIGHT is less than MIN expected value', async () => {
       try {
         await validateWidthAndHeight(imageName, validWidth, invalidHeight);
       } catch (err) {
-        expect(err.message).toBe('Invalid height');
+        expect((err as Error).message).toBe('Invalid height');
       }
     });
     it('returns ERROR: Invalid height if WIDTH is NaN', async () => {
@@ -95,7 +95,9 @@ describe('Testing Image library utilities', () => {
       try {
         await validateWidthAndHeight(imageName, invalidWidth, validHeight);
       } catch (err) {
-        expect(err.message).toBe('Wrong data type. Expected number.');
+        expect((err as Error).message).toBe(
+          'Wrong data type. Expected number.'
+        );
       }
     });
     it('returns ERROR: Invalid height if HEIGHT is NaN', async () => {
@@ -103,7 +105,9 @@ describe('Testing Image library utilities', () => {
       try {
         await validateWidthAndHeight(imageName, validWidth, invalidHeight);
       } catch (err) {
-        expect(err.message).toBe('Wrong data type. Expected number.');
+        expect((err as Error).message).toBe(
+          'Wrong data type. Expected number.'
+        );
       }
     });
   });
