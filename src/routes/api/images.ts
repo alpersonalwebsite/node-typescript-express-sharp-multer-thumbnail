@@ -96,10 +96,14 @@ images.post('/', async (req: Request, res: Response): Promise<void> => {
 
     const tempPath = tempFile.path;
 
-    // Strip path components from the client-supplied filename so an upload
-    // named e.g. ../../evil can't escape the images directory.
-    const safeName = path.basename(tempFile.originalname);
-    const destinationPath = `${path.resolve()}/images/full/${safeName}`;
+    // Strip path components (path traversal) and normalize to the `.jpg`
+    // storage contract the retrieval path (`${name}.jpg`) expects, so an upload
+    // named photo, photo.jpeg or ../../evil.jpg stays retrievable.
+    const baseName = path.basename(
+      tempFile.originalname,
+      path.extname(tempFile.originalname)
+    );
+    const destinationPath = `${path.resolve()}/images/full/${baseName}.jpg`;
 
     try {
       await fs.promises.rename(tempPath, destinationPath);
@@ -108,6 +112,10 @@ images.post('/', async (req: Request, res: Response): Promise<void> => {
       });
     } catch (renameErr) {
       console.error(renameErr);
+      // Best-effort cleanup so a failed move doesn't orphan the temp upload.
+      await fs.promises.unlink(tempPath).catch(() => {
+        // ignore cleanup failure
+      });
       return res.status(500).json({
         message: 'Could not save the image'
       });
