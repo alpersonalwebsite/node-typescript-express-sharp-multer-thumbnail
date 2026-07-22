@@ -12,7 +12,15 @@ images.get(
   async (req: Request, res: Response): Promise<unknown | void> => {
     const width = req.query.width as string;
     const height = req.query.height as string;
-    const filename = req.query.filename as unknown as string;
+    // A repeated ?filename=a&filename=b arrives as an array (and a bracketed
+    // key as an object); collapse to a single string so path.basename can't
+    // throw on a non-string. Then strip path components so a crafted
+    // ?filename=../../ can't escape the images directory (path traversal).
+    const rawFilename = Array.isArray(req.query.filename)
+      ? req.query.filename[0]
+      : req.query.filename;
+    const filename =
+      typeof rawFilename === 'string' ? path.basename(rawFilename) : '';
 
     const parsedWidth: number = parseInt(width);
     const parsedHeight: number = parseInt(height);
@@ -40,7 +48,7 @@ images.get(
 
     const s = fs.createReadStream(imagePath);
     s.on('open', function () {
-      res.set('Content-Type', 'jpg');
+      res.set('Content-Type', 'image/jpeg');
       s.pipe(res);
     });
     s.on('error', function () {
@@ -88,16 +96,30 @@ images.post('/', async (req: Request, res: Response): Promise<void> => {
 
     const tempPath = tempFile.path;
 
-    const destinationPath = await `${path.resolve()}/images/full/${
-      tempFile.originalname
-    }`;
+    // Strip path components (path traversal) and normalize to the `.jpg`
+    // storage contract the retrieval path (`${name}.jpg`) expects, so an upload
+    // named photo, photo.jpeg or ../../evil.jpg stays retrievable.
+    const baseName = path.basename(
+      tempFile.originalname,
+      path.extname(tempFile.originalname)
+    );
+    const destinationPath = `${path.resolve()}/images/full/${baseName}.jpg`;
 
-    await fs.rename(tempPath, destinationPath, (err) => {
-      if (err) throw err;
+    try {
+      await fs.promises.rename(tempPath, destinationPath);
       return res.status(201).json({
         message: 'Created'
       });
-    });
+    } catch (renameErr) {
+      console.error(renameErr);
+      // Best-effort cleanup so a failed move doesn't orphan the temp upload.
+      await fs.promises.unlink(tempPath).catch(() => {
+        // ignore cleanup failure
+      });
+      return res.status(500).json({
+        message: 'Could not save the image'
+      });
+    }
   });
 });
 

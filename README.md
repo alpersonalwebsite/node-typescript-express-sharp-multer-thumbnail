@@ -20,6 +20,10 @@ npm start
 
 *Note:* If you want to start the `dev server`, execute -instead- `npm run dev`
 
+The server listens on port `5000` by default. On macOS that port is often taken
+by AirPlay Receiver (Control Center), so set `PORT` to override it, e.g.
+`PORT=3001 npm start` (the tests read the same `PORT`).
+
 ### Run unit tests
 
 ```
@@ -48,7 +52,7 @@ npm run lint
 * **404: Resource not found**
   - Everything but GET/POST api/images
   
-* 4**15: Unsupported Media Type**
+* **415: Unsupported Media Type**
   - POST
     - If the image type is other than jpeg
 

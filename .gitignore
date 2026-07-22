@@ -88,3 +88,11 @@ lerna-debug.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# secrets & local data
+secrets/
+credentials*
+*.pem
+*.key
+*.sqlite
+*.db

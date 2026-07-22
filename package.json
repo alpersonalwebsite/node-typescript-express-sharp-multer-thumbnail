@@ -1,7 +1,7 @@
 {
   "name": "image-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Image upload and thumbnail-generation API with Express, Multer and Sharp",
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
+    "helmet": "^4.6.0",
     "jasmine": "^3.10.0",
     "jasmine-spec-reporter": "^7.0.0",
     "multer": "^1.4.3",
